@@ -1,3 +1,4 @@
+import axios from 'axios'
 /*
   STEP 1: using axios, send a GET request to the following URL
     (replacing the placeholder with your Github name):
@@ -28,7 +29,14 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [    
+  "tetondan",
+  "dustinmyers",
+  "justsml",
+  "luishrd",
+  "bigknell",
+
+];
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
@@ -49,12 +57,88 @@ const followersArray = [];
       </div>
     </div>
 */
+axios
+.get("https://api.github.com/users/katehunnicutt")
+.then((res) => {
+  console.log(res)
+  cardContainer.append(gitHubCard(res.data))
+  // followersArray.forEach((follower) => {
+  //   //declare new card variable
+  //   const followerCard = gitHubCard(follower)
+  //   //append it to dom
+  //   cardContainer.append(followerCard);
 
-/*
-  List of LS Instructors Github username's:
-    tetondan
-    dustinmyers
-    justsml
-    luishrd
-    bigknell
-*/
+  // })
+})
+.catch((err) => {
+  console.log(err);
+})
+
+followersArray.forEach((follower => {
+  axios
+  .get(`https://api.github.com/users/${follower}`)
+  .then((res) => {
+    console.log(res)
+    const followerCard = gitHubCard(follower)
+    console.log(followerCard)
+    cardContainer.append(gitHubCard(res.data))
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+
+}))
+//append to dom
+const cardContainer = document.querySelector(".cards");
+
+function gitHubCard( data ) {
+
+
+  //declaring elements
+  const card = document.createElement("div");
+  const imgElement = document.createElement("img");
+  const cardInfo = document.createElement("div");
+  const nameTitle = document.createElement("h3");
+  const userName = document.createElement("p");
+  const location = document.createElement("p");
+  const profile = document.createElement("p");
+  const address = document.createElement("a");
+  const followers = document.createElement("p");
+  const following = document.createElement("p");
+  const bio = document.createElement("p");
+
+  //setting tree structure
+  card.appendChild(imgElement);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(nameTitle);
+  cardInfo.appendChild(userName);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  profile.appendChild(address);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+
+  //adding classnames
+  card.classList.add("card");
+  cardInfo.classList.add("card-info");
+  nameTitle.classList.add("name");
+  userName.classList.add("username");
+  
+  //text elements
+  imgElement.src = data.avatar_url;
+  nameTitle.textContent = `${data.name}`;
+  userName.textContent = `${data.login}`;
+  location.textContent = `${data.location}`;
+  profile.innerHTML = `Profile: <a href = "${data.url}"> ${data.url}</a>`;
+  address.hred = data.html_url;
+  followers.textContent = `${data.followers}`;
+  following.textContent = `${data.following}`;
+  bio.textContent = `Bio: ${data.bio}`;
+
+  return card;
+}
+
+
+
+
